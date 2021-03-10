@@ -81,9 +81,14 @@ def sample_single_window(zs, labels, sampling_kwargs, level, prior, start, hps):
 def sample_level(zs, labels, sampling_kwargs, level, prior, total_length, hop_length, hps):
     print_once(f"Sampling level {level}")
     if total_length >= prior.n_ctx:
-        for start in get_starts(total_length, prior.n_ctx, hop_length):
+        print("multiple sample_single_windows...")
+        starts = get_starts(total_length, prior.n_ctx, hop_length)
+        print("starts:", starts)
+        for start in starts:
+            print("sample_single_window at", start)
             zs = sample_single_window(zs, labels, sampling_kwargs, level, prior, start, hps)
     else:
+        print("one sample_partial_window...")
         zs = sample_partial_window(zs, labels, sampling_kwargs, level, prior, total_length, hps)
     return zs
 
