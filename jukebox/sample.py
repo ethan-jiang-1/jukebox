@@ -78,17 +78,18 @@ def sample_single_window(zs, labels, sampling_kwargs, level, prior, start, hps):
     return zs
 
 # Sample total_length tokens at level=level with hop_length=hop_length
-def sample_level(zs, labels, sampling_kwargs, level, prior, total_length, hop_length, hps):
+def sample_at_level(zs, labels, sampling_kwargs, level, prior, total_length, hop_length, hps):
     print_once(f"Sampling level {level}")
+    print(f"##EC sample_at_level (total_length:{total_length}, prior.n_ctxt:{prior.n_ctx}, hop_length:{hop_length})")
     if total_length >= prior.n_ctx:
-        print("multiple sample_single_windows...")
+        print("##EC multiple sample_single_windows...")
         starts = get_starts(total_length, prior.n_ctx, hop_length)
-        print("starts:", starts)
+        print("##EC starts:", starts)
         for start in starts:
-            print("sample_single_window at", start)
+            print("##EC sample_single_window at", start)
             zs = sample_single_window(zs, labels, sampling_kwargs, level, prior, start, hps)
     else:
-        print("one sample_partial_window...")
+        print("##EC one sample_partial_window...")
         zs = sample_partial_window(zs, labels, sampling_kwargs, level, prior, total_length, hps)
     return zs
 
@@ -109,7 +110,7 @@ def _sample(zs, labels, sampling_kwargs, priors, sample_levels, hps, mark=None):
         assert hps.sample_length % prior.raw_to_tokens == 0, f"Expected sample_length {hps.sample_length} to be multiple of {prior.raw_to_tokens}"
         total_length = hps.sample_length//prior.raw_to_tokens
         hop_length = int(hps.hop_fraction[level]*prior.n_ctx)
-        zs = sample_level(zs, labels[level], sampling_kwargs[level], level, prior, total_length, hop_length, hps)
+        zs = sample_at_level(zs, labels[level], sampling_kwargs[level], level, prior, total_length, hop_length, hps)
 
         prior.cpu()
         empty_cache()

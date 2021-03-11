@@ -1,6 +1,6 @@
 import torch as t
 import numpy as np
-from jukebox.sample import sample_level
+from jukebox.sample import sample_at_level
 from jukebox.utils.torch_utils import assert_shape
 from jukebox.hparams import Hyperparams
 
@@ -70,7 +70,7 @@ def _sample(zs, labels,  priors, sample_levels, hps):
         # set correct total_length, hop_length and sampling_kwargs for level
         total_length = (hps.sample_length * hps.n_segment)//prior.raw_to_tokens
         hop_length = hps.hop_lengths[level]
-        zs = sample_level(zs, labels[level], dict(), level, prior, total_length, hop_length, hps)
+        zs = sample_at_level(zs, labels[level], dict(), level, prior, total_length, hop_length, hps)
     return zs
 
 # Ancestral sample
