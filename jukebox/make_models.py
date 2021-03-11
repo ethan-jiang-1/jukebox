@@ -49,10 +49,10 @@ def save_checkpoint(logger, name, model, opt, metrics, hps):
                 **metrics}, f'{logger.logdir}/checkpoint_{name}.pth.tar')
     return
 
-def restore_model(hps, model, checkpoint_path):
+def restore_model(hps, model, checkpoint_path, mark=None):
     model.step = 0
     if checkpoint_path != '':
-        print("## EC: restore_model from {}".format(checkpoint_path))
+        print("## EC: restore_model from {} / {}".format(checkpoint_path, mark))
         checkpoint = load_checkpoint(checkpoint_path)
         # checkpoint_hps = Hyperparams(**checkpoint['hps'])
         # for k in set(checkpoint_hps.keys()).union(set(hps.keys())):
@@ -96,7 +96,7 @@ def make_vqvae(hps, device='cuda'):
                   **block_kwargs)
 
     vqvae = vqvae.to(device)
-    restore_model(hps, vqvae, hps.restore_vqvae)
+    restore_model(hps, vqvae, hps.restore_vqvae, mark="model:vqvae")
     if hps.train and not hps.prior:
         print_all(f"Loading vqvae in train mode")
         if hps.restore_vqvae != '':
@@ -180,7 +180,7 @@ def make_prior(hps, vqvae, device='cuda'):
         from jukebox.transformer.ops import _convert_conv_weights_to_fp16
         prior.apply(_convert_conv_weights_to_fp16)
     prior = prior.to(device)
-    restore_model(hps, prior, hps.restore_prior)
+    restore_model(hps, prior, hps.restore_prior, mark="model:prior")
     if hps.train:
         print_all(f"Loading prior in train mode")
         pass
