@@ -52,6 +52,7 @@ def save_checkpoint(logger, name, model, opt, metrics, hps):
 def restore_model(hps, model, checkpoint_path):
     model.step = 0
     if checkpoint_path != '':
+        print("## EC: restore_model from {}".format(checkpoint_path))
         checkpoint = load_checkpoint(checkpoint_path)
         # checkpoint_hps = Hyperparams(**checkpoint['hps'])
         # for k in set(checkpoint_hps.keys()).union(set(hps.keys())):
@@ -64,10 +65,13 @@ def restore_model(hps, model, checkpoint_path):
 def restore_opt(opt, shd, checkpoint_path):
     if not checkpoint_path:
         return
+    print("## EC: restore_opt from {}".format(checkpoint_path))
     checkpoint = load_checkpoint(checkpoint_path)
     if "opt" in checkpoint:
+        print("## EC: restore_opt - opt")
         opt.load_state_dict(checkpoint['opt'])
     if "step" in checkpoint:
+        print("## EC: restore_opt - step")
         shd.step(checkpoint['step'])
 
 def make_vqvae(hps, device='cuda'):

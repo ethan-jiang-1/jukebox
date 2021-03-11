@@ -1,6 +1,7 @@
-import torch as t
+#import torch as t
 import torch.nn as nn
-from jukebox.vqvae.resnet import Resnet, Resnet1D
+#from jukebox.vqvae.resnet import Resnet, Resnet1D
+from jukebox.vqvae.resnet import Resnet1D
 from jukebox.utils.torch_utils import assert_shape
 
 class EncoderConvBlock(nn.Module):

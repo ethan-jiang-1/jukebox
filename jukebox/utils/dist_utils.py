@@ -1,6 +1,7 @@
 import os
 from time import sleep
-import torch
+import torch 
+import torch as t
 import jukebox.utils.dist_adapter as dist
 
 def print_once(msg):

@@ -1,8 +1,8 @@
 import functools
-import numpy as np
+#import numpy as np
 import torch as t
 import torch.nn as nn
-import jukebox.utils.dist_adapter as dist
+#import jukebox.utils.dist_adapter as dist
 
 from jukebox.transformer.ops import Conv1D, ACT_FNS, LayerNorm
 from jukebox.transformer.factored_attention import FactoredAttention

@@ -80,7 +80,7 @@ class LossScalar(object):
             self.loss_scale = loss_scale
         self.max_loss_scale = 2.**24
         self.scale_factor = scale_factor
-        self.scale_window  = scale_window
+        self.scale_window = scale_window
         self.unskipped = 0
         self.overflow = False
 
