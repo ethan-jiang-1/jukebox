@@ -93,12 +93,17 @@ def sample_level(zs, labels, sampling_kwargs, level, prior, total_length, hop_le
     return zs
 
 # Sample multiple levels
-def _sample(zs, labels, sampling_kwargs, priors, sample_levels, hps):
+def _sample(zs, labels, sampling_kwargs, priors, sample_levels, hps, mark=None):
     alignments = None
+    print("\n##EC _sample: {} @{}".format(len(sample_levels), mark))
+    loop = 1
     for level in reversed(sample_levels):
         prior = priors[level]
         prior.cuda()
         empty_cache()
+
+        print("\n##EC _sample loop {}/{}".format(loop, len(sample_levels)))
+        loop += 1
 
         # Set correct total_length, hop_length, labels and sampling_kwargs for level
         assert hps.sample_length % prior.raw_to_tokens == 0, f"Expected sample_length {hps.sample_length} to be multiple of {prior.raw_to_tokens}"
@@ -129,26 +134,26 @@ def _sample(zs, labels, sampling_kwargs, priors, sample_levels, hps):
 def ancestral_sample(labels, sampling_kwargs, priors, hps):
     sample_levels = list(range(len(priors)))
     zs = [t.zeros(hps.n_samples,0,dtype=t.long, device='cuda') for _ in range(len(priors))]
-    zs = _sample(zs, labels, sampling_kwargs, priors, sample_levels, hps)
+    zs = _sample(zs, labels, sampling_kwargs, priors, sample_levels, hps, mark="ancestral_sample")
     return zs
 
 # Continue ancestral sampling from previously saved codes
 def continue_sample(zs, labels, sampling_kwargs, priors, hps):
     sample_levels = list(range(len(priors)))
-    zs = _sample(zs, labels, sampling_kwargs, priors, sample_levels, hps)
+    zs = _sample(zs, labels, sampling_kwargs, priors, sample_levels, hps, mark="continue_sample")
     return zs
 
 # Upsample given already generated upper-level codes
 def upsample(zs, labels, sampling_kwargs, priors, hps):
     sample_levels = list(range(len(priors) - 1))
-    zs = _sample(zs, labels, sampling_kwargs, priors, sample_levels, hps)
+    zs = _sample(zs, labels, sampling_kwargs, priors, sample_levels, hps, mark="upsample")
     return zs
 
 # Prompt the model with raw audio input (dimension: NTC) and generate continuations
 def primed_sample(x, labels, sampling_kwargs, priors, hps):
     sample_levels = list(range(len(priors)))
     zs = priors[-1].encode(x, start_level=0, end_level=len(priors), bs_chunks=x.shape[0])
-    zs = _sample(zs, labels, sampling_kwargs, priors, sample_levels, hps)
+    zs = _sample(zs, labels, sampling_kwargs, priors, sample_levels, hps, mark="primed_sample")
     return zs
 
 # Load `duration` seconds of the given audio files to use as prompts
